@@ -11,6 +11,7 @@ app.get('/',(req,res)=>{
     res.status(200).send('hello server')
 })
 
+
 app.post("/scrape", async (req, res) => {
     const { url } = req.body;
     if (!url) return res.status(400).json({ error: "URL is required" });

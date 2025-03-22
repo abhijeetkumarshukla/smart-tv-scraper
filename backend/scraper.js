@@ -1,41 +1,61 @@
+const axios = require("axios");
+const cheerio = require("cheerio");
 const puppeteer = require("puppeteer");
 
 async function scrapeAmazonProduct(url) {
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: [
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--disable-dev-shm-usage",
-            "--disable-gpu"
-        ],
-    });
-
-    const page = await browser.newPage();
-
     try {
-        console.log("Navigating to:", url);
-        await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
+        const browser = await puppeteer.launch({ headless: true });
+        const page = await browser.newPage();
+        await page.goto(url, { waitUntil: "domcontentloaded" });
 
-        await page.waitForSelector("#productTitle", { timeout: 10000 });
+        const content = await page.content();
+        const $ = cheerio.load(content);
 
-        const productName = await page.$eval("#productTitle", el => el.textContent.trim());
-        console.log("✅ Product Name:", productName);
-
-        const price = await page.evaluate(() => {
-            const priceEl = document.querySelector(".a-price-whole");
-            return priceEl ? priceEl.innerText.trim() : "N/A";
+        const productName = $("#productTitle").text().trim();
+        const rating = $("span.a-icon-alt").first().text().trim();
+        const numberOfRatings = $("#acrCustomerReviewText").text().trim();
+        const price = $("#priceblock_ourprice, #priceblock_dealprice").text().trim();
+        const discount = $(".priceBlockStrikePriceString").text().trim();
+        const bankOffers = [];
+        
+        $(".a-list-item").each((_, el) => {
+            bankOffers.push($(el).text().trim());
         });
 
-        const scrapedData = { productName, price };
-        console.log("✅ Extracted Data:", scrapedData);
+        const aboutThisItem = [];
+        $("#feature-bullets ul li").each((_, el) => {
+            aboutThisItem.push($(el).text().trim());
+        });
+
+        const productInfo = {};
+        $("#productDetails_techSpec_section_1 tr").each((_, el) => {
+            const key = $(el).find("th").text().trim();
+            const value = $(el).find("td").text().trim();
+            if (key) productInfo[key] = value;
+        });
+
+        const productImages = [];
+        $("#altImages img").each((_, el) => {
+            const img = $(el).attr("src");
+            if (img) productImages.push(img);
+        });
 
         await browser.close();
-        return scrapedData;
+
+        return {
+            productName,
+            rating,
+            numberOfRatings,
+            price,
+            discount,
+            bankOffers,
+            aboutThisItem,
+            productInfo,
+            productImages,
+        };
     } catch (error) {
         console.error("Scraping error:", error);
-        await browser.close();
-        return { error: "Failed to scrape product details.", details: error.message };
+        return { error: "Failed to scrape product details." };
     }
 }
 

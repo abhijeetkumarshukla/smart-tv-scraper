@@ -12,7 +12,7 @@ function Home() {
         setLoading(true);
         setData(null);
         try {
-            const response = await axios.post("http://localhost:5000/scrape", { url });
+            const response = await axios.post("https://smart-tv-scraper-3.onrender.com/scrape", { url });
             setData(response.data);
         } catch (error) {
             console.error("Error fetching data:", error);

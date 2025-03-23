@@ -4,7 +4,12 @@ const puppeteer = require("puppeteer");
 
 async function scrapeAmazonProduct(url) {
     try {
-        const browser = await puppeteer.launch({ headless: true });
+        const browser = await puppeteer.launch({
+            headless: "new",
+            executablePath: "/usr/bin/google-chrome-stable",
+            args: ["--no-sandbox", "--disable-setuid-sandbox"]
+        });
+
         const page = await browser.newPage();
         await page.goto(url, { waitUntil: "domcontentloaded" });
 
@@ -17,7 +22,7 @@ async function scrapeAmazonProduct(url) {
         const price = $("#priceblock_ourprice, #priceblock_dealprice").text().trim();
         const discount = $(".priceBlockStrikePriceString").text().trim();
         const bankOffers = [];
-        
+
         $(".a-list-item").each((_, el) => {
             bankOffers.push($(el).text().trim());
         });

@@ -7,18 +7,20 @@ import Navbar from "../components/Navbar";
 function Home() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
-
+    
     const fetchData = async (url) => {
         setLoading(true);
         setData(null);
         try {
             const response = await axios.post("https://smart-tv-scraper-3.onrender.com/scrape", { url });
+            console.log("API Response:", response.data); // 🛑 Debugging API data
             setData(response.data);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
         setLoading(false);
     };
+    
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100 flex flex-col items-center">

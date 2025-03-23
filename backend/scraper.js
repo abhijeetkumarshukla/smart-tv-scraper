@@ -5,9 +5,9 @@ const puppeteer = require("puppeteer");
 async function scrapeAmazonProduct(url) {
     try {
         const browser = await puppeteer.launch({
-            headless: "new",
-            executablePath: "/usr/bin/google-chrome-stable",
-            args: ["--no-sandbox", "--disable-setuid-sandbox"]
+            headless: "new", // Uses the latest headless mode
+            args: ["--no-sandbox", "--disable-setuid-sandbox"],
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
         });
 
         const page = await browser.newPage();
@@ -21,17 +21,20 @@ async function scrapeAmazonProduct(url) {
         const numberOfRatings = $("#acrCustomerReviewText").text().trim();
         const price = $("#priceblock_ourprice, #priceblock_dealprice").text().trim();
         const discount = $(".priceBlockStrikePriceString").text().trim();
+        
+        // Extract bank offers
         const bankOffers = [];
-
         $(".a-list-item").each((_, el) => {
             bankOffers.push($(el).text().trim());
         });
 
+        // Extract key features
         const aboutThisItem = [];
         $("#feature-bullets ul li").each((_, el) => {
             aboutThisItem.push($(el).text().trim());
         });
 
+        // Extract product specifications
         const productInfo = {};
         $("#productDetails_techSpec_section_1 tr").each((_, el) => {
             const key = $(el).find("th").text().trim();
@@ -39,6 +42,7 @@ async function scrapeAmazonProduct(url) {
             if (key) productInfo[key] = value;
         });
 
+        // Extract product images
         const productImages = [];
         $("#altImages img").each((_, el) => {
             const img = $(el).attr("src");

@@ -2,8 +2,8 @@
 
 A **MERN-based web scraper** that extracts Smart TV product details from Amazon India. This project uses **React (Vite) for the frontend, Tailwind CSS for styling, and Node.js (Express, Puppeteer) for the backend**.
 
-🚀 **Live Demo:** [Frontend Link](https://your-vercel-url.com)  
-⚙️ **Backend API:** [Render API](https://your-backend-on-render.com)  
+🚀 **Live Demo:** [Frontend Link](https://smart-tv-scraper-yr9h.vercel.app/)  
+⚙️ **Backend API:** [Render API](https://smart-tv-scraper-1.onrender.com/)  
 
 ---
 
@@ -27,9 +27,6 @@ A **MERN-based web scraper** that extracts Smart TV product details from Amazon 
 
 ---
 
-## 🏗️ Installation & Setup
+ # Thank You.
 
-### **1️⃣ Clone the Repository**
-```sh
-git clone https://github.com/yourusername/smart-tv-scraper.git
-cd smart-tv-scraper
+ 
